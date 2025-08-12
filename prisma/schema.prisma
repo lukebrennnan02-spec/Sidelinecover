@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  name           String?
+  email          String   @unique
+  hashedPassword String
+  role           Role     @default(PHYSIO)
+  createdAt      DateTime @default(now())
+  physioProfile  PhysioProfile?
+  clubProfile    ClubProfile?
+  jobs           Job[]    @relation("ClubJobs")
+  acceptedJobs   Job[]    @relation("AcceptedJobs")
+}
+
+model PhysioProfile {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String   @unique
+  coruNumber  String
+  idDocPath   String
+  photoPath   String
+  verifiedAt  DateTime?
+}
+
+model ClubProfile {
+  id            String   @id @default(cuid())
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String   @unique
+  clubName      String
+  county        String
+  phone         String
+  officialEmail String
+}
+
+model Job {
+  id               String   @id @default(cuid())
+  title            String
+  description      String
+  sport            String
+  level            String
+  fee              Int
+  date             DateTime
+  locationName     String
+  lat              Float
+  lng              Float
+  status           JobStatus @default(OPEN)
+  createdAt        DateTime @default(now())
+  club             User     @relation("ClubJobs", fields: [clubId], references: [id])
+  clubId           String
+  acceptedPhysio   User?    @relation("AcceptedJobs", fields: [acceptedPhysioId], references: [id])
+  acceptedPhysioId String?
+}
+
+enum Role {
+  PHYSIO
+  CLUB
+  ADMIN
+}
+
+enum JobStatus {
+  OPEN
+  ACCEPTED
+  COMPLETED
+  CANCELLED
+}
