@@ -1,3 +1,4 @@
+
 # SidelineCover (MVP)
 
 Next.js 14 + Prisma MVP for your Ireland-focused marketplace connecting **clubs** and **CORU-verified physios**.
